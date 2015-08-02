@@ -1,0 +1,71 @@
+<!DOCTYPE innerHTMLl PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="UTF-8">
+		<style type="text/css">
+			li{
+				padding: 5px;
+			}
+			input{
+				width: 400px;
+			}
+		</style>
+		<script type="text/javascript">
+			
+			// START - Global Variables
+			var file_string = null;
+			var get = function(id) { return document.getElementById(id); }
+			var file = file || {};
+			var files = null;
+			// END - Global Variables
+			
+			function download(filename, text) {
+			  var element = document.createElement('a');
+			  element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+			  element.setAttribute('download', filename);
+			  element.style.display = 'none';
+			  document.body.appendChild(element);
+			  element.click();
+			  document.body.removeChild(element);
+			}
+
+			function change(){			
+	    		var f = files[0];
+	    		 if (f) {
+			      var r = new FileReader();
+			      r.onload = function(e) { 
+				    file_string = e.target.result;
+
+				    // Here is where you can modify the file content which is 
+				    // in file_string
+
+				    file_string = get('file_text').value + "\n" + file_string
+					download(get('file_name').value, file_string);
+			      }
+			      r.readAsText(f);
+			    } else { 
+			      alert("Something bad happend :( ");
+			    }
+			}
+		</script>
+	</head>
+	<body>		
+		<label>Select file to upload: </label>
+		<input type="file" id="files" name="files[]" multiple />
+		<output id="list"></output>
+		<script type="text/javascript">
+			file.handleFileSelect = function handleFileSelect(evt) {
+	    		files = evt.target.files; 
+			    var output = [];
+			    for (var i = 0, f; f = files[i]; i++) {
+			      output.push('<li><strong>', escape(f.name), '</strong> (', f.type || 'n/a', ') - ',
+			                  f.size, ' bytes, last modified: ',
+			                  f.lastModifiedDate ? f.lastModifiedDate.toLocaleDateString() : 'n/a',
+			                  '</li><li><label>New file name: </label><input id="file_name" value=""></input></li><li><label>First line new file: </label><input id="file_text" value=""></input></li><li><button type="button" onClick="change()" >Change</button></li>');
+			    }
+			    get('list').innerHTML = '<ul>' + output.join('') + '</ul>';
+			  }
+			get('files').addEventListener('change', file.handleFileSelect, false);
+		</script>
+	</body>
+</html>
